@@ -31,8 +31,8 @@ The application is built with the following components:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/multilingual-report-translator.git
-   cd multilingual-report-translator
+   git clone https://github.com/sathvick-sudarsan/Translator-Tool.git
+   cd Translator-Tool
    ```
 
 2. Install dependencies:
@@ -42,13 +42,30 @@ The application is built with the following components:
 
 3. Run the application:
    ```
-   python app.py
+   python run.py
    ```
 
 4. Open your browser and navigate to:
    ```
    http://localhost:5000
    ```
+
+## Project Structure
+
+The repository contains the following files and their purposes:
+
+- **translator.py**: Core translation functionality using Hugging Face's transformers library
+- **app.py**: Flask web application that provides the user interface and API endpoints
+- **config.py**: Configuration settings for the application, model, and languages
+- **utils.py**: Utility functions for logging, timing, text processing, and GPU detection
+- **templates/index.html**: HTML template for the web interface with modern UI
+- **run.py**: Script to run the application with proper configuration
+- **test_translator.py**: Test script for verifying translation functionality
+- **test_api.py**: Script to test the Flask API endpoints
+- **translate_example.py**: Example script showing how to use the translator programmatically
+- **requirements.txt**: List of dependencies required by the application
+- **.gitignore**: Specifies files to exclude from version control
+- **README.md**: Documentation for the project
 
 ## Usage
 
@@ -131,22 +148,6 @@ To integrate this translation tool with your company's website:
 - The application can be deployed within your organization's infrastructure
 
 ## Development
-
-### Project Structure
-
-```
-multilingual-report-translator/
-├── app.py                 # Flask web application
-├── translator.py          # Core translation functionality
-├── config.py              # Configuration settings
-├── utils.py               # Utility functions
-├── requirements.txt       # Dependencies
-├── templates/             # HTML templates
-│   └── index.html         # Main web interface
-├── static/                # Static assets
-├── logs/                  # Log files
-└── README.md              # Documentation
-```
 
 ### Extending the Tool
 
