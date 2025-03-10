@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Report Translator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .header h1 {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+        .header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        .translation-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .language-selector {
+            margin-bottom: 20px;
+        }
+        .text-area {
+            min-height: 200px;
+            resize: vertical;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .btn-translate {
+            background-color: #0d6efd;
+            color: white;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-translate:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+        }
+        .translation-result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+        .language-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .language-badge.hindi {
+            background-color: #ff7675;
+            color: white;
+        }
+        .language-badge.tamil {
+            background-color: #74b9ff;
+            color: white;
+        }
+        .language-badge.malayalam {
+            background-color: #55efc4;
+            color: #2d3436;
+        }
+        .language-badge.telugu {
+            background-color: #a29bfe;
+            color: white;
+        }
+        .language-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .language-badge.active {
+            box-shadow: 0 0 0 2px #0d6efd;
+        }
+        .stats {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+        .file-upload {
+            margin-bottom: 20px;
+        }
+        .features-section {
+            margin: 40px 0;
+        }
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .feature-icon {
+            font-size: 2rem;
+            color: #0d6efd;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Multilingual Report Translator</h1>
+            <p>Translate your reports into Hindi, Tamil, Malayalam, and Telugu with ease</p>
+        </div>
+
+        <div class="translation-container">
+            <div class="language-selector">
+                <h5>Select Target Language:</h5>
+                <div class="language-badges mt-2">
+                    <span class="language-badge hindi active" data-language="hindi">Hindi</span>
+                    <span class="language-badge tamil" data-language="tamil">Tamil</span>
+                    <span class="language-badge malayalam" data-language="malayalam">Malayalam</span>
+                    <span class="language-badge telugu" data-language="telugu">Telugu</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="sourceText" class="form-label">English Text:</label>
+                <textarea class="form-control text-area" id="sourceText" placeholder="Enter your English text here..."></textarea>
+            </div>
+
+            <div class="file-upload">
+                <label for="fileUpload" class="form-label">Or upload a text file:</label>
+                <input class="form-control" type="file" id="fileUpload" accept=".txt,.doc,.docx,.pdf">
+            </div>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-translate" id="translateBtn">Translate</button>
+            </div>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Translating your text... This may take a moment for large reports.</p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="translation-result" id="translationResult" style="display: none;">
+                <h5>Translation Result:</h5>
+                <div id="translatedText" class="mt-3"></div>
+                <div class="stats" id="translationStats"></div>
+                <button class="btn btn-sm btn-outline-primary mt-3" id="copyBtn">Copy Translation</button>
+                <button class="btn btn-sm btn-outline-secondary mt-3 ms-2" id="downloadBtn">Download as Text File</button>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h3 class="text-center mb-4">Features</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h5>Report Translation</h5>
+                        <p>Specialized in translating large reports while maintaining formatting and context.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h5>Privacy Focused</h5>
+                        <p>Your data stays private with our locally running translation model.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h5>Fast Processing</h5>
+                        <p>Efficient translation of even large documents with optimized processing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Multilingual Report Translator | Powered by Advanced NLP Technology</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const sourceText = document.getElementById('sourceText');
+            const fileUpload = document.getElementById('fileUpload');
+            const translateBtn = document.getElementById('translateBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            const translationResult = document.getElementById('translationResult');
+            const translatedText = document.getElementById('translatedText');
+            const translationStats = document.getElementById('translationStats');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const languageBadges = document.querySelectorAll('.language-badge');
+
+            // Current selected language
+            let selectedLanguage = 'hindi';
+
+            // Language selection
+            languageBadges.forEach(badge => {
+                badge.addEventListener('click', function() {
+                    // Remove active class from all badges
+                    languageBadges.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked badge
+                    this.classList.add('active');
+                    // Update selected language
+                    selectedLanguage = this.dataset.language;
+                });
+            });
+
+            // File upload handling
+            fileUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    sourceText.value = e.target.result;
+                };
+                reader.readAsText(file);
+            });
+
+            // Translation function
+            translateBtn.addEventListener('click', function() {
+                const text = sourceText.value.trim();
+                
+                if (!text) {
+                    showError('Please enter some text to translate.');
+                    return;
+                }
+
+                // Show loading spinner
+                loadingSpinner.style.display = 'block';
+                translationResult.style.display = 'none';
+                errorMessage.style.display = 'none';
+
+                // API call
+                fetch('/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        target_language: selectedLanguage
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading spinner
+                    loadingSpinner.style.display = 'none';
+                    
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+                    
+                    // Show translation result
+                    translatedText.textContent = data.translation;
+                    translationStats.textContent = `Source: English | Target: ${capitalizeFirstLetter(data.target_language)} | Processing Time: ${data.processing_time}`;
+                    translationResult.style.display = 'block';
+                })
+                .catch(error => {
+                    loadingSpinner.style.display = 'none';
+                    showError('An error occurred during translation. Please try again.');
+                    console.error('Translation error:', error);
+                });
+            });
+
+            // Copy translation
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = translatedText.textContent;
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                });
+            });
+
+            // Download translation
+            downloadBtn.addEventListener('click', function() {
+                const textToDownload = translatedText.textContent;
+                const blob = new Blob([textToDownload], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `translation_${selectedLanguage}_${new Date().toISOString().slice(0, 10)}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            // Helper functions
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+        });
+    </script>
+</body>
+</html> 
